@@ -1,1 +1,3 @@
-# shell basics
+# SE DO
+System Engineering
+DevOps
