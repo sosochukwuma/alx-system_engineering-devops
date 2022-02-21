@@ -1,2 +1,0 @@
-# SHELL BASICS
-Base Tricks
