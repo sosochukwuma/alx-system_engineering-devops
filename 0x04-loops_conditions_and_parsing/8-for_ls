@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# This script displays all files in current directory
-# without a number and dash if file starts with it.
-for i in *; do
-    echo "$i" | cut -d'-' -f2
+#bash script that displays dir contents after hyphen
+#ls | cut -d '-' -f2
+#ls | while read line; do cut -d '-' -f2; done
+for line in *; do
+    echo "$line" | cut -d '-' -f2
 done
