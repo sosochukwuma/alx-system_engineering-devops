@@ -1,0 +1,9 @@
+## Web infrastructure design
+
+All files in this directory contain drawings of the relationships and interactions between client and server.
+
+* 0-simple_web_stack: Simple web stack
+
+* 1-distributed_web_infrastructure: Distributed web infrastructure
+
+* 2-secured_and_monitored_web_infrastructure: Secured and monitored web infrastructure
