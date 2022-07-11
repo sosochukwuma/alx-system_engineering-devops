@@ -1,42 +1,47 @@
 #!/usr/bin/python3
-import re
-import requests
+"""Module for task 3"""
 
 
-def count_words(subreddit, word_list):
-    """
-    GET the word count for each word in word_list.
-    Print results in descending order by the count, not the title.
-    If no posts match or subreddit is invalid, print a newline.
-    If a word has no matches, skip and do not print it.
-    """
-    storage = {word.lower(): 0 for word in word_list}
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {'user-agent': 'philsrequest'}
+def count_words(subreddit, word_list, word_count={}, after=None):
+    """Queries the Reddit API and returns the count of words in
+    word_list in the titles of all the hot posts
+    of the subreddit"""
+    import requests
 
-    r = requests.get(url, headers=headers)
-    if (r.status_code == 404 or 'data' not in r.json()):
+    sub_info = requests.get("https://www.reddit.com/r/{}/hot.json"
+                            .format(subreddit),
+                            params={"after": after},
+                            headers={"User-Agent": "My-User-Agent"},
+                            allow_redirects=False)
+    if sub_info.status_code != 200:
         return None
+
+    info = sub_info.json()
+
+    hot_l = [child.get("data").get("title")
+             for child in info
+             .get("data")
+             .get("children")]
+    if not hot_l:
+        return None
+
+    word_list = list(dict.fromkeys(word_list))
+
+    if word_count == {}:
+        word_count = {word: 0 for word in word_list}
+
+    for title in hot_l:
+        split_words = title.split(' ')
+        for word in word_list:
+            for s_word in split_words:
+                if s_word.lower() == word.lower():
+                    word_count[word] += 1
+
+    if not info.get("data").get("after"):
+        sorted_counts = sorted(word_count.items(), key=lambda kv: kv[0])
+        sorted_counts = sorted(word_count.items(),
+                               key=lambda kv: kv[1], reverse=True)
+        [print('{}: {}'.format(k, v)) for k, v in sorted_counts if v != 0]
     else:
-        while (1):
-            r = r.json()
-            for post in r['data']['children']:
-                tmp = post['data']['title'].split()
-                for word in tmp:
-                    if word.lower() in storage.keys():
-                        storage[word.lower()] += 1
-
-            after = r['data']['after']
-            if (after is None):
-                break
-            r = requests.get("{}?after={}".format(url, after), headers=headers)
-
-    storage = [(k, storage[k]) for k in
-               sorted(storage, key=storage.get, reverse=True)]
-
-    if len(storage) == 0:
-        print("")
-    else:
-        for k, v in storage:
-            if (v > 0):
-                print("{}: {:d}".format(k, v))
+        return count_words(subreddit, word_list, word_count,
+                           info.get("data").get("after"))
