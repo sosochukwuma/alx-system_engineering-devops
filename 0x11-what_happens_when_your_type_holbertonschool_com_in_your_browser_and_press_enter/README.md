@@ -1,2 +1,1 @@
-# What happens when you type holbertonschoo.com in your browser
-* 0-blog_post: blog link
+# What happens when you type google.com in your browser
